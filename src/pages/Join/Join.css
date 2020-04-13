@@ -1,0 +1,14 @@
+.Join {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+}
+
+.Join form {
+  display: flex;
+  flex-direction: column;
+}
+
+.Join__input {
+  margin-bottom: 1rem;
+}

@@ -1,0 +1,8 @@
+.Guess {
+  display: flex;
+  flex-direction: column;
+}
+
+.Guess > * {
+  margin-bottom: 1rem;
+}

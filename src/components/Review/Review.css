@@ -1,0 +1,54 @@
+.Review {
+  width: 100%;
+}
+
+.Review img {
+  animation-name: grow-image;
+  animation-duration: 750ms;
+  animation-timing-function: ease-in-out;
+}
+
+.ReviewOwner {
+  background: white;
+  color: #673ab7;
+  padding: 0.75rem;
+  margin: -0.5rem;
+}
+
+.ReviewEntryLabel {
+  margin-top: 1.5rem;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.ReviewEntryGuess {
+  font-size: 1.4rem;
+  background: #ffd600;
+  color: rgba(0, 0, 0, 0.87);
+  padding: 1rem;
+  border-radius: 5px;
+  animation-name: grow;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  overflow: hidden;
+}
+
+@keyframes grow {
+  from {
+    max-height: 0px;
+    padding: 0;
+  }
+  to {
+    max-height: 200px;
+    padding: 1rem;
+  }
+}
+
+@keyframes grow-image {
+  from {
+    max-height: 0px;
+  }
+  to {
+    max-height: 640px;
+  }
+}
