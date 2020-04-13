@@ -2,40 +2,61 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@material-ui/core";
 import { Room } from "colyseus.js";
 
+import "./Lobby.css";
+
 export interface Props {
   room: Room;
-  startGame: () => void;
 }
 
 export interface User {
   name: string;
   sessionId: string;
+  isPresent: boolean;
   isYou: boolean;
+  isPartyLeader: boolean;
 }
 
 const Lobby = (props: Props) => {
-  const [users, setUsers] = useState<{ name: string; isYou: boolean }[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [partyLeader, setPartyLeader] = useState<string>();
 
+  const init = (state: any) => {
+    if (!state) {
+      return;
+    }
+
+    const users = [];
+    for (let name in state.users) {
+      const user = state.users[name];
+      users.push({
+        ...user,
+        isPresent: user.isPresent,
+        isYou: user.name === state.sessionName[props.room.sessionId],
+        isPartyLeader: user.sessionId === state.partyLeader,
+      });
+    }
+
+    setUsers(users);
+    setPartyLeader(state.partyLeader);
+  };
+
   useEffect(() => {
+    init(props.room.state);
+
     const listener = props.room.onStateChange((state) => {
       const users = [];
       for (let name in state.users) {
         const user = state.users[name];
-        if (user.isPresent) {
-          users.push({
-            ...user,
-            isYou: user.name === state.sessionName[props.room.sessionId],
-          });
-        }
+        users.push({
+          ...user,
+          isPresent: user.isPresent,
+          isYou: user.name === state.sessionName[props.room.sessionId],
+          isPartyLeader: user.sessionId === state.partyLeader,
+        });
       }
 
       setUsers(users);
       setPartyLeader(state.partyLeader);
-
-      if (props.room.state.state === "playing") {
-        props.startGame();
-      }
     });
 
     return () => {
@@ -50,11 +71,27 @@ const Lobby = (props: Props) => {
   };
 
   return (
-    <div>
+    <div className="Lobby">
       <ul>
         {users.map((user) => (
-          <li>
-            {user.name} {user.isYou ? "(You)" : ""}
+          <li
+            key={user.name}
+            className={user.isYou ? "IsYou" : ""}
+            style={{ opacity: user.isPresent ? 1 : 0.4 }}
+          >
+            <span />
+            <span>{user.name}</span>{" "}
+            {user.isPartyLeader ? (
+              <span
+                className="PartyLeader"
+                role="img"
+                aria-label="party leader crown"
+              >
+                👑
+              </span>
+            ) : (
+              <span />
+            )}
           </li>
         ))}
       </ul>

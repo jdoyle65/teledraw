@@ -1,0 +1,29 @@
+.Lobby ul {
+  list-style: none;
+  padding: 0;
+}
+
+.Lobby ul > li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  color: #673ab7;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  border-radius: 5px;
+}
+
+.Lobby ul > li > span {
+  flex: 1;
+}
+
+.Lobby ul > li.IsYou {
+  background: #ffd600;
+}
+
+.PartyLeader {
+  font-size: 1.5rem;
+  text-align: right;
+}

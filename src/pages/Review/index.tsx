@@ -11,6 +11,10 @@ const Review = (props: Props) => {
   const [book, setBook] = useState<any>({});
 
   const init = (state: any) => {
+    if (!state) {
+      return;
+    }
+
     if (state.reviewBook) {
       setBook(JSON.parse(JSON.stringify(state.reviewBook)));
     }

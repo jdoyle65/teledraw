@@ -3,14 +3,12 @@ import { Room } from "colyseus.js";
 
 import DrawCanvas from "../../components/DrawCanvas";
 import Guess from "../../components/Guess";
-import Review from "../../components/Review";
 
 import "./Game.css";
 
 enum GameState {
   Draw = "draw",
   Guess = "guess",
-  Review = "reviewing",
   Unknown = "unknown",
 }
 
@@ -24,12 +22,13 @@ const Game = (props: Props) => {
   const [flipbook, setFlipbook] = useState({ owner: "" });
 
   const init = (state: any) => {
-    if (state.state === "reviewing") {
-      setGameState(GameState.Review);
+    if (!state) {
+      return;
     }
 
-    const name = state.sessionName[props.room.sessionId];
-    const flipbook = state.flipbookAssignments[name];
+    const name = state.sessionName && state.sessionName[props.room.sessionId];
+    const flipbook =
+      state.flipbookAssignments && state.flipbookAssignments[name];
 
     if (flipbook && state.state === "playing") {
       setFlipbook(flipbook);
@@ -77,9 +76,8 @@ const Game = (props: Props) => {
         <DrawCanvas word={prompt} room={props.room} owner={flipbook.owner} />
       )}
       {gameState === GameState.Guess && <Guess room={props.room} />}
-      {gameState === GameState.Review && <Review room={props.room} />}
       {gameState === GameState.Unknown && (
-        <div>Oop! Something went wrong...</div>
+        <div>Oops! Something went wrong...</div>
       )}
     </div>
   );

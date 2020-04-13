@@ -21,7 +21,7 @@ export interface Props {
 
 const DrawCanvas = (props: Props) => {
   const canvas = useRef<HTMLCanvasElement>(null);
-  const timeAllowed = 30;
+  const timeAllowed = 60;
 
   const [isDrawing, setIsDrawing] = useState(false);
   const [lastPosition, setLastPosition] = useState<
