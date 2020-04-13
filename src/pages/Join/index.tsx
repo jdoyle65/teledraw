@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, Snackbar } from "@material-ui/core";
 import { Client, Room } from "colyseus.js";
 
 // CSS
@@ -21,6 +21,7 @@ const Join = (props: Props) => {
   const [room, setRoom] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [nameError, setNameError] = useState<string>();
+  const [warningOpen, setWarningOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem(StorageKey.Name);
@@ -51,9 +52,17 @@ const Join = (props: Props) => {
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    props.client.joinOrCreate("teledraw", { code: room, name }).then((room) => {
-      props.setRoom(room);
-    });
+    props.client
+      .joinOrCreate("teledraw", { code: room, name })
+      .then((room) => {
+        props.setRoom(room);
+      })
+      .catch((err) => {
+        if (err === "onAuth failed.") {
+          setWarningOpen(true);
+          setNameError("Name is taken");
+        }
+      });
   };
 
   return (
@@ -88,6 +97,12 @@ const Join = (props: Props) => {
         >
           Join
         </Button>
+        <Snackbar
+          open={warningOpen}
+          message={`Name "${name}" is taken`}
+          autoHideDuration={2000}
+          onClose={() => setWarningOpen(false)}
+        />
       </form>
     </div>
   );

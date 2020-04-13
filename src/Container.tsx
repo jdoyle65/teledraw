@@ -41,10 +41,19 @@ const Container = () => {
   };
 
   useEffect(() => {
-    let stateListener: import("strong-events/lib").EventEmitter<(
-      state: any
-    ) => void>;
+    let stateListener: any;
+    let messageListener: any, leaveListener: any;
     if (room) {
+      leaveListener = room.onLeave((code) => {
+        setPage(Page.Join);
+      });
+
+      messageListener = room.onMessage((data: any) => {
+        if (data.type === "error") {
+          console.error(data);
+        }
+      });
+
       init(room.state);
       stateListener = room.onStateChange((state) => init(state));
     }
@@ -52,6 +61,14 @@ const Container = () => {
     return () => {
       if (stateListener) {
         stateListener.clear();
+      }
+
+      if (messageListener) {
+        messageListener.clear();
+      }
+
+      if (leaveListener) {
+        leaveListener.clear();
       }
     };
   }, [room]);
