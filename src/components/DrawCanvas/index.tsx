@@ -134,9 +134,25 @@ const DrawCanvas = (props: Props) => {
     }
   };
 
+  const renderTimer = () => {
+    const showWarning = timeLeft <= 10;
+    const classA = timeLeft % 2 === 0;
+    const classB = timeLeft % 2 === 1;
+
+    return (
+      <div
+        className={`TimeLeft ${showWarning && classA && "WarningA"} ${
+          showWarning && classB && "WarningB"
+        }`}
+      >
+        {timeLeft}
+      </div>
+    );
+  };
+
   return (
     <div className="DrawCanvas">
-      {!isSubmitted && <div className="TimeLeft">{timeLeft}</div>}
+      {!isSubmitted && renderTimer()}
       <div>You are drawing</div>
       <div className="DrawLabel">{props.word}</div>
       {!isSubmitted && (

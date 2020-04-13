@@ -39,3 +39,41 @@
   font-weight: bold;
   font-family: "Courier New", Courier, monospace;
 }
+
+.WarningA,
+.WarningB {
+  animation-duration: 500ms;
+  animation-timing-function: ease-out;
+}
+
+.WarningA {
+  animation-name: warningA;
+}
+
+.WarningB {
+  animation-name: warningB;
+}
+
+@keyframes warningA {
+  from {
+    transform: scale(1.5);
+    color: red;
+  }
+
+  to {
+    transform: scale(1);
+    color: inherit;
+  }
+}
+
+@keyframes warningB {
+  from {
+    transform: scale(1.5);
+    color: red;
+  }
+
+  to {
+    transform: scale(1);
+    color: inherit;
+  }
+}
