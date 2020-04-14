@@ -6,6 +6,12 @@ import Guess from "../../components/Guess";
 
 import "./Game.css";
 
+import {
+  RoomState,
+  GameState as RoomGameState,
+  EntryType,
+} from "../../interfaces";
+
 enum GameState {
   Draw = "draw",
   Guess = "guess",
@@ -13,7 +19,7 @@ enum GameState {
 }
 
 export interface Props {
-  room: Room;
+  room: Room<RoomState>;
 }
 
 const Game = (props: Props) => {
@@ -21,16 +27,16 @@ const Game = (props: Props) => {
   const [prompt, setPrompt] = useState<string>();
   const [flipbook, setFlipbook] = useState({ owner: "" });
 
-  const init = (state: any) => {
+  const init = (state: RoomState) => {
     if (!state) {
       return;
     }
 
     const name = state.sessionName && state.sessionName[props.room.sessionId];
-    const flipbook =
-      state.flipbookAssignments && state.flipbookAssignments[name];
+    const assignedName = state.flipbookAssignments[name];
+    const flipbook = state.flipbooks && state.flipbooks[assignedName];
 
-    if (flipbook && state.state === "playing") {
+    if (flipbook && state.state === RoomGameState.Playing) {
       setFlipbook(flipbook);
 
       if (!flipbook.entries) {
@@ -40,17 +46,17 @@ const Game = (props: Props) => {
       const entry = flipbook.entries[state.rotations];
 
       switch (entry.type) {
-        case "draw":
+        case EntryType.Draw:
           setGameState(GameState.Draw);
           break;
-        case "guess":
+        case EntryType.Guess:
           setGameState(GameState.Guess);
           break;
         default:
           setGameState(GameState.Unknown);
       }
 
-      if (entry.type === "draw" && state.rotations > 0) {
+      if (entry.type === EntryType.Draw && state.rotations > 0) {
         const prevEntry = flipbook.entries[state.rotations - 1];
         setPrompt(prevEntry.value);
       } else {

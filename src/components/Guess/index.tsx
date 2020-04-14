@@ -6,19 +6,27 @@ import { Room } from "colyseus.js";
 
 import "./Guess.css";
 
+import { RoomState, FlipbookEntry } from "../../interfaces";
+import { ServerUrl } from "../../contants";
+
 export interface Props {
   room: Room;
 }
 
 const Guess = (props: Props) => {
   const [guess, setGuess] = useState<string>("");
-  const [imageEntry, setImageEntry] = useState<any>({});
+  const [imageEntry, setImageEntry] = useState<FlipbookEntry>();
   const [isSubmitted, setIsSumitted] = useState<boolean>(false);
   const [guessError, setGuessError] = useState<string | null>(null);
 
-  const init = (state: any) => {
+  const init = (state: RoomState) => {
+    if (!state) {
+      return;
+    }
+
     const name = state.sessionName[props.room.sessionId];
-    const flipbook = state.flipbookAssignments[name];
+    const assignedName = state.flipbookAssignments[name];
+    const flipbook = state.flipbooks[assignedName];
 
     if (flipbook) {
       const rotation = state.rotations;
@@ -29,7 +37,7 @@ const Guess = (props: Props) => {
 
   useEffect(() => {
     init(props.room.state);
-    const listener = props.room.onStateChange((state) => {});
+    const listener = props.room.onStateChange((state) => init(state));
 
     return () => listener.remove(() => {});
   }, []);
@@ -54,10 +62,16 @@ const Guess = (props: Props) => {
 
   return (
     <div className="Guess">
-      <div>Guess {imageEntry.author}'s picture</div>
+      <div>Guess {imageEntry && imageEntry.author}'s picture</div>
       {!isSubmitted && (
         <>
-          <img src={imageEntry.value} alt="drawing" style={{ width: "100%" }} />
+          {imageEntry && (
+            <img
+              src={`https://${ServerUrl}/${imageEntry.value}`}
+              alt="drawing"
+              style={{ width: "100%" }}
+            />
+          )}
           <TextField
             value={guess}
             variant="outlined"

@@ -5,6 +5,7 @@
 }
 
 .DrawCanvas canvas {
+  touch-action: none;
   margin-bottom: 1rem;
   width: 95vmin;
   height: 95vmin;

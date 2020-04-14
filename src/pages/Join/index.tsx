@@ -5,6 +5,8 @@ import { Client, Room } from "colyseus.js";
 // CSS
 import "./Join.css";
 
+import { RoomState } from "../../interfaces";
+
 enum StorageKey {
   Name = "name",
   Room = "room",
@@ -14,7 +16,7 @@ const MaxNameLength = 20;
 
 export interface Props {
   client: Client;
-  setRoom: (name: Room) => void;
+  setRoom: (name: Room<RoomState>) => void;
 }
 
 const Join = (props: Props) => {
@@ -53,7 +55,7 @@ const Join = (props: Props) => {
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     props.client
-      .joinOrCreate("teledraw", { code: room, name })
+      .joinOrCreate<RoomState>("teledraw", { code: room, name })
       .then((room) => {
         props.setRoom(room);
       })

@@ -6,6 +6,8 @@ import useInterval from "@use-it/interval";
 
 import { ActionType } from "../../store/reducer";
 
+import { ServerUrl } from "../../contants";
+
 import "./DrawCanvas.css";
 
 enum Tool {
@@ -65,8 +67,8 @@ const DrawCanvas = (props: Props) => {
   const onTouchStart = (event: TouchEvent) => {
     const touch = event.targetTouches[0];
     const target = event.target as HTMLElement;
-    const x = touch.clientX - target.offsetLeft;
-    const y = touch.clientY - target.offsetTop;
+    const x = touch.pageX - target.offsetLeft;
+    const y = touch.pageY - target.offsetTop;
 
     onStartDraw(x, y);
   };
@@ -83,9 +85,9 @@ const DrawCanvas = (props: Props) => {
   };
 
   const onTouchMove = (event: TouchEvent) => {
-    const { clientX, clientY } = event.targetTouches[0];
+    const { pageX, pageY } = event.targetTouches[0];
     const { offsetTop, offsetLeft } = event.target as HTMLElement;
-    onMove(clientX - offsetLeft, clientY - offsetTop);
+    onMove(pageX - offsetLeft, pageY - offsetTop);
   };
 
   const onMove = (x: number, y: number) => {
@@ -126,10 +128,22 @@ const DrawCanvas = (props: Props) => {
   const submitDrawing = () => {
     if (canvas.current) {
       const url = canvas.current.toDataURL("image/png");
-      props.room.send({
-        type: "submitDrawing",
-        imageDataUrl: url,
-      });
+      fetch(`https://${ServerUrl}/image`, {
+        method: "post",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ imageDataUrl: url }),
+      })
+        .then((res) => res.json())
+        .then((json) => {
+          props.room.send({
+            type: "submitDrawing",
+            imageFilename: json.filename,
+          });
+        });
+
       setIsSubmitted(true);
     }
   };

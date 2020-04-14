@@ -3,20 +3,34 @@ import { Room } from "colyseus.js";
 
 import "./Review.css";
 
+import {
+  RoomState,
+  Flipbook,
+  FlipbookEntry,
+  EntryType,
+} from "../../interfaces";
+
+import { ServerUrl } from "../../contants";
+
 export interface Props {
-  room: Room;
+  room: Room<RoomState>;
+}
+
+interface EntryWithKey extends FlipbookEntry {
+  key: number | string;
 }
 
 const Review = (props: Props) => {
-  const [book, setBook] = useState<any>({});
+  const [book, setBook] = useState<Flipbook>();
 
-  const init = (state: any) => {
+  const init = (state: RoomState) => {
     if (!state) {
       return;
     }
 
     if (state.reviewBook) {
-      setBook(JSON.parse(JSON.stringify(state.reviewBook)));
+      const book = state.flipbooks[state.reviewBook];
+      setBook(JSON.parse(JSON.stringify(book)));
     }
   };
 
@@ -30,32 +44,33 @@ const Review = (props: Props) => {
       {book && <div className="ReviewOwner">{book.owner}'s Flipbook</div>}
       {book &&
         Array.isArray(book.entries) &&
-        [...book.entries]
-          .map((entry: any, index) => {
+        ([...book.entries] as EntryWithKey[])
+          .map((entry, index) => {
             entry.key = index;
             return entry;
           })
-          .reverse()
-          .map((entry: any) => (
+          .filter((entry) => entry.doShowReview)
+          .map((entry) => (
             <div key={entry.key}>
-              {entry.type === "draw" && (
+              {entry.type === EntryType.Draw && (
                 <>
                   <div className="ReviewEntryLabel">
                     {entry.author}'s drawing
                   </div>
                   <img
-                    src={entry.value}
+                    src={`https://${ServerUrl}/${entry.value}`}
                     style={{ width: "80%", maxWidth: "640px" }}
+                    alt={`${entry.author}'s drawing`}
                   />
                 </>
               )}
-              {entry.type === "guess" && (
+              {entry.type === EntryType.Guess && (
                 <>
                   <div className="ReviewEntryLabel">{entry.author}'s guess</div>
                   <div className="ReviewEntryGuess">{entry.value}</div>
                 </>
               )}
-              {entry.type === "prompt" && (
+              {entry.type === EntryType.Prompt && (
                 <>
                   <div className="ReviewEntryLabel">Original Prompt</div>
                   <div className="ReviewEntryGuess">{entry.value}</div>

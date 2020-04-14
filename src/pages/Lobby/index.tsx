@@ -4,8 +4,10 @@ import { Room } from "colyseus.js";
 
 import "./Lobby.css";
 
+import { RoomState } from "../../interfaces";
+
 export interface Props {
-  room: Room;
+  room: Room<RoomState>;
 }
 
 export interface User {
@@ -20,7 +22,7 @@ const Lobby = (props: Props) => {
   const [users, setUsers] = useState<User[]>([]);
   const [partyLeader, setPartyLeader] = useState<string>();
 
-  const init = (state: any) => {
+  const init = (state: RoomState) => {
     if (!state) {
       return;
     }
